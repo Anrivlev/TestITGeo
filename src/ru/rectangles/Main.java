@@ -1,7 +1,10 @@
 package ru.rectangles;
 
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,7 +20,7 @@ public class Main {
             xValuesSet.add(rectangle.xMin);
             xValuesSet.add(rectangle.xMax);
         }
-        List<Double> xValues = xValuesSet.stream().toList();
+        List<Double> xValues = new ArrayList<>(xValuesSet);
         xValues.sort(null); // sort in ascending order
 
         // split all rectangles by vertical lines at points from xValues
@@ -40,7 +43,7 @@ public class Main {
             } else if (rectanglesToUnite.get(0).xMin == rectangle.xMin) {
                 rectanglesToUnite.add(rectangle);
             } else {
-                tmpRectangles.add(new Rectangle(rectanglesToUnite));
+                tmpRectangles.addAll(uniteRectangles(rectanglesToUnite));
                 rectanglesToUnite.clear();
                 rectanglesToUnite.add(rectangle);
             }
@@ -55,5 +58,29 @@ public class Main {
             totalArea += rectangle.getArea();
         }
         System.out.println("Total area: " + totalArea);
+    }
+
+    public static List<Rectangle> uniteRectangles(List<Rectangle> rectangles) {
+        if (rectangles.size() == 1) {return rectangles;}
+        int i = 1;
+        do {
+            int j = 0;
+            while (true) {
+                if (rectangles.get(i).intersects(rectangles.get(j))) {
+                    rectangles.add(new Rectangle(new Rectangle[]{rectangles.get(i), rectangles.get(j)}));
+                    rectangles.remove(i);
+                    i -= 1;
+                    rectangles.remove(j);
+                    if (rectangles.size() == 1) {return rectangles;}
+                } else {
+                    j += 1;
+                    if (j == i) {
+                        break;
+                    }
+                }
+            }
+            i += 1;
+        } while (i != rectangles.size());
+        return rectangles;
     }
 }

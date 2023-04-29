@@ -2,6 +2,7 @@ package ru.rectangles;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 
@@ -41,6 +42,14 @@ public class Rectangle implements Comparable<Rectangle> {
         this.yMax = rectangles.stream().flatMapToDouble(r -> DoubleStream.of(r.yMax)).max().getAsDouble();
     }
 
+    public Rectangle (Rectangle[] rectangles) {
+        // is used to unite rectangles with equal xMin and xMax
+        this.xMin = rectangles[0].xMin;
+        this.xMax = rectangles[0].xMax;
+        this.yMin = Arrays.stream(rectangles).flatMapToDouble(r -> DoubleStream.of(r.yMin)).min().getAsDouble();
+        this.yMax = Arrays.stream(rectangles).flatMapToDouble(r -> DoubleStream.of(r.yMax)).max().getAsDouble();
+    }
+
     public double getArea() {
         return (this.xMax - this.xMin) * (this.yMax - this.yMin);
     }
@@ -66,5 +75,9 @@ public class Rectangle implements Comparable<Rectangle> {
                 "), (" + xMax +
                 ", " + yMax +
                 ")}";
+    }
+
+    public boolean intersects(Rectangle other) {
+        return this.xMin <= other.xMax && this.xMax >= other.xMin && this.yMin <= other.yMax && this.yMax >= other.yMin;
     }
 }
